@@ -1,0 +1,48 @@
+---
+import { content, type Lang } from '../i18n/content';
+import { v2 } from '../i18n/v2';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const about = content[lang].about;
+const jobs = content[lang].experience.jobs;
+const edu = content[lang].education;
+const t = v2[lang];
+
+// One flat list: jobs first, then the degree
+const rows = [
+  ...jobs.map((j) => ({ period: j.period, title: j.company, detail: j.role, current: j.current })),
+  { period: edu.period, title: edu.degree, detail: edu.school, current: false },
+];
+---
+
+<section id="about" class="px-6 py-32 sm:px-12">
+  <div class="grid gap-16 lg:grid-cols-4 lg:gap-5">
+    <p class="text-xs uppercase tracking-widest text-subtle">{t.about}</p>
+    <div class="lg:col-span-3">
+      <p class="display text-[clamp(1.75rem,3.4vw,3.25rem)] font-normal text-pretty">{about.lead}</p>
+      <p class="mt-8 max-w-2xl leading-relaxed text-muted">{about.body}</p>
+    </div>
+  </div>
+
+  <div id="experience" class="mt-32 grid gap-10 lg:grid-cols-4 lg:gap-5">
+    <p class="text-xs uppercase tracking-widest text-subtle">{t.experience}</p>
+    <ul class="border-t border-line lg:col-span-3">
+      {
+        rows.map((r) => (
+          <li class="group grid gap-1 border-b border-line py-7 transition-colors sm:grid-cols-[180px_1fr_auto] sm:items-baseline sm:gap-6">
+            <span class="text-sm text-subtle">{r.period}</span>
+            <span class="display text-3xl transition-transform duration-500 group-hover:translate-x-2 sm:text-4xl">{r.title}</span>
+            <span class="text-sm text-muted sm:text-right">
+              {r.detail}
+              {r.current && <span class="ml-2 inline-block size-1.5 -translate-y-0.5 rounded-full bg-emerald-400" aria-hidden="true" />}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

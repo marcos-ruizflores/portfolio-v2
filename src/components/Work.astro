@@ -1,0 +1,119 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { content, type Lang, type Project } from '../i18n/content';
+import { v2 } from '../i18n/v2';
+import toriiSearch from '../assets/projects/torii-search.png';
+import criptoPanel from '../assets/projects/cripto-panel.png';
+import tfgCover from '../assets/projects/tfg-cover.png';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const projects = content[lang].projects.items;
+const t = v2[lang];
+
+const shots: Record<Project['visual'], ImageMetadata> = { torii: toriiSearch, cripto: criptoPanel, thesis: tfgCover };
+
+// Full-width rows: a big image on one side, text on the other, swapping sides each time
+const word = t.selected.toUpperCase();
+---
+
+<section id="work" class="relative pb-32">
+  {/* Huge title that slides sideways as you scroll */}
+  <div class="relative overflow-hidden py-10" aria-hidden="true">
+    <p class="display whitespace-nowrap text-[clamp(4.5rem,15vw,14rem)] font-medium leading-[0.9]" data-slide>
+      {Array.from({ length: 4 }, () => `${word}  `).join('')}
+    </p>
+    <p
+      class="display -mt-[0.18em] whitespace-nowrap text-[clamp(4.5rem,15vw,14rem)] font-medium leading-[0.9] opacity-25 [mask-image:linear-gradient(to_top,#000,transparent_45%)] [transform:scaleY(-1)]"
+      data-slide
+      data-flip>
+      {Array.from({ length: 4 }, () => `${word}  `).join('')}
+    </p>
+  </div>
+  <h2 class="sr-only">{t.selected}</h2>
+
+  <div class="mt-10 space-y-28 px-3 sm:px-6 lg:mt-20 lg:space-y-40">
+    {
+      projects.map((p, i) => {
+        const flip = i % 2 === 1;
+        return (
+          <article class="grid items-center gap-8 lg:grid-cols-12 lg:gap-12">
+            <div class:list={['lg:col-span-8 lg:row-start-1', flip ? 'lg:col-start-5' : 'lg:col-start-1']} data-parallax="0.06">
+              <div class:list={['wall flex aspect-[16/11] items-center justify-center p-5 sm:p-10 lg:p-14', `wall-${p.visual}`]}>
+                <Image
+                  src={shots[p.visual]}
+                  alt={p.alt?.[0] ?? ''}
+                  widths={[700, 1100, 1600]}
+                  sizes="(min-width: 1024px) 60vw, 100vw"
+                  class="relative z-10 max-h-full w-auto max-w-full object-contain shadow-2xl shadow-black/50"
+                />
+              </div>
+            </div>
+
+            <div
+              class:list={[
+                'flex flex-col gap-8 px-3 lg:col-span-4 lg:row-start-1 lg:px-0',
+                flip ? 'lg:col-start-1' : 'lg:col-start-9 lg:items-end lg:text-right',
+              ]}>
+              <div>
+                <p class="text-xs uppercase tracking-widest text-subtle">{p.label}</p>
+                <h3 class="display mt-3 text-4xl text-balance xl:text-5xl">{p.title.split(' · ')[0]}</h3>
+                <p class="mt-6 leading-relaxed text-muted">{p.description}</p>
+                <p class="mt-5 text-sm text-subtle">{p.tech.join(' · ')}</p>
+              </div>
+              {p.links.length > 0 && (
+                <div class="flex gap-6">
+                  {p.links.map((l) => (
+                    <a href={l.href} target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1 hover:text-muted">
+                      {l.label}
+                      <span class="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true">
+                        ↗
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </article>
+        );
+      })
+    }
+  </div>
+</section>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const slides = [...document.querySelectorAll<HTMLElement>('[data-slide]')];
+  const parallax = [...document.querySelectorAll<HTMLElement>('[data-parallax]')];
+
+  if (!reduce) {
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const y = window.scrollY;
+      // Title moves left as you go down; the reflection follows it
+      slides.forEach((el) => (el.style.transform = `translateX(${-y * 0.35}px)${'flip' in el.dataset ? ' scaleY(-1)' : ''}`));
+      // Images drift a little slower than the page
+      const wide = window.innerWidth >= 1024;
+      parallax.forEach((el) => {
+        if (!wide) return (el.style.transform = '');
+        const r = el.getBoundingClientRect();
+        const offset = (r.top + r.height / 2 - window.innerHeight / 2) * Number(el.dataset.parallax);
+        el.style.transform = `translateY(${offset}px)`;
+      });
+    };
+    const onScroll = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(update);
+      }
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+  }
+</script>
