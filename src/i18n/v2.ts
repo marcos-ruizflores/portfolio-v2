@@ -4,7 +4,7 @@ import type { Lang } from './content';
 export const v2 = {
   en: {
     lines: ['Marcos Ruiz-Flores', 'Backend Engineer'],
-    rotating: ['Based in Barcelona', 'Backend at Allianz Technology', 'Building Torii on the side', 'Java and Spring Boot'],
+    rotating: ['Based in Barcelona', 'Backend Software Engineer', 'Building Torii on the side', 'Java and Spring Boot'],
     selected: 'Selected work',
     about: 'About',
     experience: 'Experience',
@@ -21,7 +21,7 @@ export const v2 = {
   },
   es: {
     lines: ['Marcos Ruiz-Flores', 'Ingeniero Backend'],
-    rotating: ['Desde Barcelona', 'Backend en Allianz Technology', 'Construyendo Torii', 'Java y Spring Boot'],
+    rotating: ['Desde Barcelona', 'Backend Software Engineer', 'Construyendo Torii', 'Java y Spring Boot'],
     selected: 'Proyectos',
     about: 'Sobre mí',
     experience: 'Experiencia',
