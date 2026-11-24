@@ -29,6 +29,7 @@ import {
   siQiskit,
   siFastapi,
   siVite,
+  siSolidity,
   siGnubash,
   type SimpleIcon,
 } from 'simple-icons';
@@ -69,6 +70,7 @@ const byName: Record<string, SimpleIcon> = {
   Qiskit: siQiskit,
   FastAPI: siFastapi,
   Vite: siVite,
+  Solidity: siSolidity,
 };
 
 export interface TechIcon {
